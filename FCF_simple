@@ -1,0 +1,71 @@
+#include <iostream> 
+#include <vector> 
+#include <cmath> 
+#include <algorithm> 
+using namespace std; 
+
+
+
+
+class DCF{ 
+    public: 
+        DCF();
+};
+
+DCF::DCF()
+{
+    double CFops[10]        = {500,400,600,700,900};
+    double CapEx[10]        = {20,30,10,10,40}; 
+    double FCF[10]; 
+    
+    double CFavg = 0;
+    double Capexavg = 0;
+    double CFsum = 0;
+    double CapExsum = 0;
+    double CFgr = 0;
+    double Capexgr = 0;
+    
+    
+    for(int i = 0; i<5; i++){ 
+        FCF[i] = CFops[i]-CapEx[i];
+        
+        CFsum += CFops[i];
+        CapExsum +=CapEx[i]; 
+        
+        //cout<<FCF[i]<<", ";                         //good 
+        
+    }
+    
+    CFavg = CFsum/5.0;
+    Capexavg = CapExsum/5.0;
+    
+    CFgr += (CFops[2]-CFops[1])/CFops[1];
+    Capexgr += (CapEx[2]-CapEx[1])/CapEx[1];
+    
+    CFgr += (CFops[3]-CFops[2])/CFops[2];
+    Capexgr += (CapEx[3]-CapEx[2])/CapEx[2];
+    
+    CFgr += (CFops[4]-CFops[3])/CFops[3];
+    Capexgr += (CapEx[4]-CapEx[3])/CapEx[3];
+    
+    CFgr = CFgr/3.0;    
+    Capexgr = Capexgr/3.0;
+  
+    
+    //cout<< "\n"<<CFgr<<", "<<Capexgr<<"\n";
+    
+    for(int j = 5; j<10; j++) {
+        CFops[j] = CFops[j-1] * (1.0+CFgr); 
+        CapEx[j] = CapEx[j-1] * (1.0+Capexgr); 
+    
+        FCF[j] = CFops[j] - CapEx[j];
+        cout<<FCF[j]<<", ";
+    }
+    
+}
+
+
+int main() {
+    DCF solver; 
+    return 0;
+}
