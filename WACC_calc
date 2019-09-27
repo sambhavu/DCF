@@ -1,0 +1,116 @@
+#include <iostream> 
+#include <vector> 
+#include <cmath> 
+#include <algorithm> 
+using namespace std; 
+
+class DCF{ 
+    public: 
+        DCF();
+};
+
+DCF::DCF()
+{
+    double Revenue[10]          = {};          
+    double COGS[10]             = {};          
+    double GrossProfit[10]      = {}; 
+    double gross_margin[10]     = {};
+    
+    double SGA[10]              = {};
+    double EBITDA[10]           = {};
+    double ebitda_margin[10]    = {};
+    
+    double DnA[10]              = {};
+    double EBIT[10]             = {};
+    double ebit_margin[10]      = {};
+    
+    double tx = 0;
+    double NOPAT[10]            = {};
+    double Capex[10]            = {};
+    double Change_NWC[10]       = {};
+    
+    double FCF[10]              = {};
+    
+    // previous 3 year FCF
+    for(int i = 1; i<4; i++){           
+        
+        GrossProfit[i] = Revenue[i] - COGS[i]; 
+        gross_margin[i] = GrossProfit[i]/Revenue[i]; 
+        
+        EBITDA[i] = GrossProfit[i] - SGA[i];
+        ebitda_margin[i] = EBITDA[i]/Revenue[i]; 
+        
+        EBIT[i] = EBITDA[i] - DnA[i];
+        ebit_margin[i] = EBIT[i]/Revenue[i]; 
+        
+        NOPAT[i] = EBIT[i]*(1-tx);
+        
+        FCF[i] = NOPAT[i]+DnA[i]-Capex[i]-Change_NWC[i];
+    }
+        
+    //projections by previous 3 year average
+    double gross_margin_avg = (gross_margin[1]+gross_margin[2]+gross_margin[3])/3;
+    double revenue_gr;
+    double ebitda_margin_avg = (ebitda_margin[1]+ebitda_margin[2]+ebitda_margin[3])/3;
+    double ebit_margin_avg = (ebit_margin[1]+ebit_margin[2]+ebit_margin[3])/3;
+    
+    double capex_avg = (Capex[1]+Capex[2]+Capex[3])/3;
+    double Change_NWC_avg = (Change_NWC[1]+Change_NWC[2]+Change_NWC[3])/3;
+    
+    for(int i = 4; i<9; i++){
+        Revenue[i] = Revenue[i-1]*(1+revenue_gr);
+        GrossProfit[i] = Revenue[i]*gross_margin_avg; 
+        COGS[i] = Revenue[i]-GrossProfit[i]; 
+        
+        EBITDA[i] = Revenue[i]*ebitda_margin_avg;
+        SGA[i] = GrossProfit[i]-EBITDA[i]; 
+        
+        EBIT[i] = Revenue[i]*ebit_margin_avg; 
+        DnA[i] = EBITDA[i]-EBIT[i]; 
+        
+        NOPAT[i] = EBIT[i]*(1-tx); 
+        
+        FCF[i] = NOPAT[i]+DnA[i]-capex_avg-Change_NWC_avg; 
+    }
+    
+    //FCF Projections Done
+    
+    
+    double Ke = 0;
+    double Kd = 0;
+    double Beta = 0;
+    double rf = 0; 
+    double Pd = 0; 
+    double Pe = 0; 
+    double implied_coupon = 0;
+    double mrp = 0;
+    double share_price = 0;
+    double shares_outstanding = 0;
+    double book_value_debt = 0; 
+    double market_value_equity; 
+    double total_cap = 0; 
+    
+    double wacc = 0;
+    
+    
+    market_value_equity = share_price*shares_outstanding;
+    total_cap = market_value_equity + book_value_debt; 
+    
+    Pd = book_value_debt/total_cap; 
+    Pe = market_value_equity/total_cap; 
+    
+    Kd = implied_coupon*(1-tx); 
+    Ke = rf + Beta*mrp;
+
+    wacc = (Ke*Pe)+((Kd*Pd)*(1-tx)); 
+    
+    //wacc calculation done 
+    
+    
+}
+
+
+int main() {
+    DCF solver; 
+    return 0;
+}
