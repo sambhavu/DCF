@@ -1,0 +1,71 @@
+#include <iostream> 
+#include <vector> 
+#include <cmath> 
+#include <algorithm> 
+using namespace std; 
+
+class DCF{ 
+    public: 
+        DCF();
+};
+
+DCF::DCF()
+{
+    double Revenue[10]          = {};          
+    double COGS[10]             = {};          
+    double GrossProfit[10]      = {}; 
+    double gross_margin[10]     = {};
+    
+    double SGA[10]              = {};
+    double EBITDA[10]           = {};
+    double ebitda_margin[10]    = {};
+    
+    double DnA[10]              = {};
+    double EBIT[10]             = {};
+    double ebit_margin[10]      = {};
+    
+    double tx = 0;
+    double NOPAT[10]            = {};
+    double Capex[10]            = {};
+    double Change_NWC[10]       = {};
+    
+    double FCF[10]              = {};
+    
+    
+    
+    double Beta = 0;
+    double rf = 0; 
+    double CFavg = 0;
+    double Capexavg = 0;
+    double CFsum = 0;
+    double CapExsum = 0;
+    double CFgr = 0;
+    double Capexgr = 0;
+    
+    // previous 3 year FCF
+    for(int i = 0; i<3; i++){           
+        
+        GrossProfit[i] = Revenue[i] - COGS[i]; 
+        gross_margin[i] = GrossProfit[i]/Revenue[i]; 
+        
+        EBITDA[i] = GrossProfit[i] - SGA[i];
+        ebitda_margin[i] = EBITDA[i]/Revenue[i]; 
+        
+        EBIT[i] = EBITDA[i] - DnA[i];
+        ebit_margin[i] = EBIT[i]/Revenue[i]; 
+        
+        NOPAT[i] = EBIT[i]*(1-tx);
+        
+        FCF[i] = NOPAT[i]+DnA[i]-Capex[i]-Change_NWC[i];
+    }
+        
+    
+   
+    
+}
+
+
+int main() {
+    DCF solver; 
+    return 0;
+}
