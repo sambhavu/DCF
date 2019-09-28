@@ -1,10 +1,33 @@
-double DCF :: random_number(){
+double DCF :: random_number(double number, double stndev){
     
-    double u1,u2,normalrandom; 
-    u1 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
-    u2 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
-    normalrandom = cos(8*atan(1.0)*u2)*sqrt(-2*log(u1));
+    double mean = number; 
+    double vol = stndev; 
+    double u1,u2,normalrandom;
+    double change; 
+    double count, sum, avg; 
     
-    return normalrandom;
+    sum = 0;
+    count = 0; 
+    
+    double prev = mean;
+    
+    for(int i = 0; i<100; i++){
+        mean = prev; 
+        for(int j = 0; j<10; j++) { 
+            
+                u1 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
+                u2 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
+                normalrandom = cos(8*atan(1.0)*u2)*sqrt(-2*log(u1));
+                
+                change = normalrandom*vol*mean; 
+                mean+=change; 
+                //cout<<mean<<"\n";
+        }
+        sum+=mean; 
+        count++; 
+    }
+    avg = sum/count; 
+    //cout<<avg<<"\n";
+    return avg;
     
 }
