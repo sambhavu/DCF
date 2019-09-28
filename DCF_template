@@ -21,7 +21,7 @@ class DCF{
     double DnA[10]              = {};
     double EBIT[10]             = {};
     double ebit_margin[10]      = {};
-    
+    double revenue_gr           =0;
     double tx = 0;
     double NOPAT[10]            = {};
     double Capex[10]            = {};
@@ -103,7 +103,6 @@ void DCF :: cash_flows(){
         
     //projections by previous 3 year average
     double gross_margin_avg = (gross_margin[1]+gross_margin[2]+gross_margin[3])/3;
-    double revenue_gr;
     double ebitda_margin_avg = (ebitda_margin[1]+ebitda_margin[2]+ebitda_margin[3])/3;
     double ebit_margin_avg = (ebit_margin[1]+ebit_margin[2]+ebit_margin[3])/3;
     
@@ -184,33 +183,88 @@ double DCF :: implied_upside(){
     return upside;
 }
 
-
+ 
 
 DCF::DCF()
 {    
-    Revenue[10]          = {0,6259,6352,6624};          
-    COGS[10]             = {0,2522,2574,2754};          
-    SGA[10]              = {0,1353,1393,1418};
-    DnA[10]              = {0,139,145,152};
-    tx                   = .26;
-    Capex[10]            = {0,140,146,141};
-    Change_NWC[10]       = {0,268,301,255};
     
-
-    Beta                  = 1.13;
-    rf                    = 0.0188; 
-    implied_coupon        = 0.036;
-    mrp                   = .06;
-    share_price           = 108.01;
-    shares_outstanding    = 134;
-    book_value_debt       = 1649.7; 
+    cout<<"Discounted Cash Flow Analysis \nLookback period: 3 years\n\n"; 
+    
+    cout<<"Input Previous Revenues: \n";
+    for(int i = 1; i<4; i++){
+        cout<<i<<":  ";
+        cin >> Revenue[i];  
+    }
+    
+    cout<<"Input Previous Cost of Goods Sold: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>COGS[i];
+    }
+    
+    cout<<"Input Previous Selling General & Administrative Expenses: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>SGA[i];
+    }
+    
+    
+    cout<<"Input Previous Depreciation & Ammortization Expenses: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>DnA[i];
+    }
+    
+    cout<<"Input Previous Capital Expenditures\n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>Capex[i];
+    }
+    
+    cout<<"Input Previous Change in Net Working Capital \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>Change_NWC[i];
+    }    
+    
+    cout<<"Corporate tax rate: ";
+    cin>>tx; 
+    
+    cout<<"Revenue Growth Rate: ";
+    cin>>revenue_gr;
+    
+    cout<<"Equity Beta: ";
+    cin>>Beta; 
+    
+    cout<<"Risk Free Rate: ";
+    cin>>rf; 
+    
+    cout<<"Implied Coupon of Corporate Bond: ";
+    cin>>implied_coupon;
+    
+    cout<<"Market Risk Premium: ";
+    cin>>mrp; 
+    
+    cout<<"share price: ";
+    cin>>share_price;
+    
+    cout<<"shares outstanding: ";
+    cin>>shares_outstanding;
+    
+    cout<<"Book value of debt: ";
+    cin>>book_value_debt;
+    
+    cout<<"Terminal Growth Rate: ";
+    cin>>terminal_gr;
   
+    cout<<"Cash: ";
+    cin>>cash;
     
-    terminal_gr           = .03;
+    cout<<"Preferred Securities: ";
+    cin>>preferred; 
     
-    cash                  = 1567; 
-    preferred             = 0; 
-    minority              = 0; 
+    cout<<"minority shares: :";
+    cin>>minority; 
 
 }
 
@@ -227,13 +281,3 @@ int main() {
     
     return 0;
 }
-
-
-
-
-
-
-
-
-
-        
