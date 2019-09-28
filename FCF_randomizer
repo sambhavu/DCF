@@ -1,0 +1,321 @@
+
+    
+#include <iostream> 
+#include <vector> 
+#include <cmath> 
+#include <algorithm> 
+using namespace std; 
+
+class DCF{ 
+    public: 
+    
+    double Revenue[10]          = {0,6259,6352,6624};          
+    double COGS[10]             = {0,3737,3778,3870};          
+    double GrossProfit[10]      = {}; 
+    double gross_margin[10]     = {};
+    
+    double SGA[10]              = {0,1353,1393,1418};
+    double EBITDA[10]           = {};
+    double ebitda_margin[10]    = {};
+    
+    double DnA[10]              = {0,219,170,170};
+    double EBIT[10]             = {};
+    double ebit_margin[10]      = {};
+    double revenue_gr           =.03;
+    double tx                   = .26;
+    double NOPAT[10]            = {};
+    double Capex[10]            = {0,140,146,141};
+    double Change_NWC[10]       = {0,268,301,255};
+    
+    double FCF[10]              = {};
+    
+    double Ke = 0;
+    double Kd = 0;
+    double Beta = 1.13;
+    double rf = .0188; 
+    double Pd = 0; 
+    double Pe = 0; 
+    double implied_coupon = .036;
+    double mrp = .06;
+    double share_price = 108.01;
+    double shares_outstanding = 134;
+    double book_value_debt = 1646; 
+    double market_value_equity; 
+    double total_cap = 0; 
+    double wacc = 0;
+    double wacc2 = 0;
+    
+    double PVFCF=0; 
+    
+    double terminal_gr = 0.03;
+    double terminal_value = 0;
+    double PV_terminal = 0; 
+    double discount_terminal = 0;
+    double enterprise = 0;
+    
+    double cash = 1567; 
+    double preferred = 0; 
+    double minority = 0; 
+    double equity = 0; 
+    double implied_price = 0;
+    double upside = 0; 
+    
+    double count = 1; 
+    
+    
+    DCF();
+        
+    double random_number(double number, double stndev);
+        
+    double PV(double number, double r, double t);
+    
+    void WACC();
+    
+    void cash_flows();    
+    
+    double implied_upside();
+    
+};
+
+double DCF :: PV(double number, double r, double t){
+    double PV = number/(pow((1+r),t)); 
+    return PV; 
+
+}
+
+void DCF :: cash_flows(){
+    
+    // previous 3 year FCF
+    for(int i = 1; i<4; i++){           
+        
+        GrossProfit[i] = Revenue[i] - COGS[i]; 
+        gross_margin[i] = GrossProfit[i]/Revenue[i]; 
+        
+        EBITDA[i] = GrossProfit[i] - SGA[i];
+        ebitda_margin[i] = EBITDA[i]/Revenue[i]; 
+        
+        EBIT[i] = EBITDA[i] - DnA[i];
+        ebit_margin[i] = EBIT[i]/Revenue[i]; 
+        
+        NOPAT[i] = EBIT[i]*(1-tx);
+        
+        FCF[i] = NOPAT[i]+DnA[i]-Capex[i]-Change_NWC[i];
+    }
+        
+    //projections by previous 3 year average
+    double gross_margin_avg = (gross_margin[1]+gross_margin[2]+gross_margin[3])/3;
+    double ebitda_margin_avg = (ebitda_margin[1]+ebitda_margin[2]+ebitda_margin[3])/3;
+    double ebit_margin_avg = (ebit_margin[1]+ebit_margin[2]+ebit_margin[3])/3;
+    
+    double capex_avg = (Capex[1]+Capex[2]+Capex[3])/3;
+    double Change_NWC_avg = (Change_NWC[1]+Change_NWC[2]+Change_NWC[3])/3;
+    
+    for(int i = 4; i<9; i++){
+        Revenue[i] = Revenue[i-1]*(1+revenue_gr);
+        GrossProfit[i] = Revenue[i]*gross_margin_avg; 
+        COGS[i] = Revenue[i]-GrossProfit[i]; 
+        
+        EBITDA[i] = Revenue[i]*ebitda_margin_avg;
+        SGA[i] = GrossProfit[i]-EBITDA[i]; 
+        
+        EBIT[i] = Revenue[i]*ebit_margin_avg; 
+        DnA[i] = EBITDA[i]-EBIT[i]; 
+        
+        NOPAT[i] = EBIT[i]*(1-tx); 
+        
+        FCF[i] = NOPAT[i]+DnA[i]-capex_avg-Change_NWC_avg; 
+        
+    
+        wacc2=random_number(FCF[i],.05);
+        cout<<FCF[i]<<", "<<wacc2<<"\n";
+    }
+    
+    //FCF Projections Done
+    
+    
+    
+    for(int i = 4; i<9; i++){ 
+        
+        PVFCF += PV(FCF[i],wacc,count);
+        //PVFCF += FCF[i]/(pow((1+wacc),count));     
+        count++; 
+    }
+    //present value of future cash flows
+}
+
+void DCF :: WACC(){
+    market_value_equity = share_price*shares_outstanding;
+    total_cap = market_value_equity + book_value_debt; 
+    
+    Pd = book_value_debt/total_cap; 
+    Pe = market_value_equity/total_cap; 
+    
+    Kd = implied_coupon*(1-tx); 
+    Ke = rf + Beta*mrp;
+
+    wacc = (Ke*Pe)+((Kd*Pd)*(1-tx)); 
+
+    //wacc calculation done
+    
+}
+
+double DCF :: random_number(double number, double stndev){
+    
+    double mean = number; 
+    double vol = stndev; 
+    double u1,u2,normalrandom;
+    double change; 
+    double count, sum, avg; 
+    
+    sum = 0;
+    count = 0; 
+    
+    double prev = mean;
+    
+    for(int i = 0; i<100; i++){
+        mean = prev; 
+        for(int j = 0; j<10; j++) { 
+            
+                u1 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
+                u2 = ( (double)(rand()) + 1.0 )/( (double)(RAND_MAX) + 1.0);
+                normalrandom = cos(8*atan(1.0)*u2)*sqrt(-2*log(u1));
+                
+                change = normalrandom*vol*mean; 
+                mean+=change; 
+                //cout<<mean<<"\n";
+        }
+        sum+=mean; 
+        count++; 
+    }
+    avg = sum/count; 
+    //cout<<avg<<"\n";
+    return avg;
+    
+}
+
+
+
+
+double DCF :: implied_upside(){ 
+    
+    terminal_value = (FCF[8]*(1+terminal_gr))/(wacc-terminal_gr);
+    discount_terminal = 1/pow((1+wacc),count); 
+    PV_terminal = discount_terminal*terminal_value; 
+    enterprise = PV_terminal+PVFCF; 
+    
+    equity = enterprise - book_value_debt + cash - preferred - minority; 
+    implied_price = equity/shares_outstanding; 
+    upside = 100*((implied_price/share_price)-1.0);
+    
+    //cout<<"done"; 
+    return upside;
+}
+
+ 
+
+DCF::DCF()
+{    
+    /*
+    
+    cout<<"Discounted Cash Flow Analysis \nLookback period: 3 years\n\n"; 
+    
+    cout<<"Input Previous Revenues: \n";
+    for(int i = 1; i<4; i++){
+        cout<<i<<":  ";
+        cin >> Revenue[i];  
+    }
+    
+    cout<<"Input Previous Cost of Goods Sold: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>COGS[i];
+    }
+    
+    cout<<"Input Previous Selling General & Administrative Expenses: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>SGA[i];
+    }
+    
+    
+    cout<<"Input Previous Depreciation & Ammortization Expenses: \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>DnA[i];
+    }
+    
+    cout<<"Input Previous Capital Expenditures\n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>Capex[i];
+    }
+    
+    cout<<"Input Previous Change in Net Working Capital \n";
+    for(int i = 1; i<4; i++){ 
+        cout<<i<<":  ";
+        cin>>Change_NWC[i];
+    }    
+    
+    cout<<"Corporate tax rate: ";
+    cin>>tx; 
+    
+    cout<<"Revenue Growth Rate: ";
+    cin>>revenue_gr;
+    
+    cout<<"Equity Beta: ";
+    cin>>Beta; 
+    
+    cout<<"Risk Free Rate: ";
+    cin>>rf; 
+    
+    cout<<"Implied Coupon of Corporate Bond: ";
+    cin>>implied_coupon;
+    
+    cout<<"Market Risk Premium: ";
+    cin>>mrp; 
+    
+    cout<<"share price: ";
+    cin>>share_price;
+    
+    cout<<"shares outstanding: ";
+    cin>>shares_outstanding;
+    
+    cout<<"Book value of debt: ";
+    cin>>book_value_debt;
+    
+    cout<<"Terminal Growth Rate: ";
+    cin>>terminal_gr;
+  
+    cout<<"Cash: ";
+    cin>>cash;
+    
+    cout<<"Preferred Securities: ";
+    cin>>preferred; 
+    
+    cout<<"minority shares: :";
+    cin>>minority; 
+
+    */
+}
+
+
+
+int main() {
+    
+    DCF solver; 
+    solver.WACC();
+    solver.cash_flows(); 
+    double ret = solver.implied_upside();
+    cout<<ret;
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+        
