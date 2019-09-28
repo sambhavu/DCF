@@ -188,11 +188,36 @@ double DCF :: implied_upside(){
 
 DCF::DCF()
 {    
+    Revenue[10]          = {0,6259,6352,6624};          
+    COGS[10]             = {0,2522,2574,2754};          
+    SGA[10]              = {0,1353,1393,1418};
+    DnA[10]              = {0,139,145,152};
+    tx                   = .26;
+    Capex[10]            = {0,140,146,141};
+    Change_NWC[10]       = {0,268,301,255};
     
+
+    Beta                  = 1.13;
+    rf                    = 0.0188; 
+    implied_coupon        = 0.036;
+    mrp                   = .06;
+    share_price           = 108.01;
+    shares_outstanding    = 134;
+    book_value_debt       = 1649.7; 
+  
+    
+    terminal_gr           = .03;
+    
+    cash                  = 1567; 
+    preferred             = 0; 
+    minority              = 0; 
+
 }
 
 
+
 int main() {
+    
     DCF solver; 
     solver.WACC();
     solver.cash_flows(); 
